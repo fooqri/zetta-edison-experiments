@@ -1,0 +1,23 @@
+{
+  "name": "zetta-hello-world",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "color": "^0.7.3",
+    "mraa": "^0.5.4-135-gdd80730",
+    "noble": "^0.3.9",
+    "zetta": "^0.20.0",
+    "zetta-auto-scout": "^0.7.0",
+    "zetta-bean-driver": "^0.4.0",
+    "zetta-hue-driver": "^0.4.0",
+    "zetta-led-edison-driver": "^0.5.1",
+    "zetta-led-mock-driver": "^0.7.1",
+    "zetta-photocell-mock-driver": "^0.4.0"
+  }
+}

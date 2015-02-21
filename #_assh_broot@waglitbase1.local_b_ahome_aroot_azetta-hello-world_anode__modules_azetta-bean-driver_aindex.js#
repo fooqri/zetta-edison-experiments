@@ -1,0 +1,86 @@
+var util = require('util');
+var exec = require('child_process').exec;
+var Scout = require('zetta-scout');
+var noble = require('noble');
+var Bean = require('./bean');
+ 
+//var BEAN_SERVICE_ID = [ 'a495ff10c5b14b44b5121370f02d74de' ];
+//var BEAN_SERVICE_ID = [ '0205DAF665BB630637AE8682A545B3B8' ];
+
+var BEAN_SERVICE_ID = [ '495ff10c5b14b44b5121370f02d74de' ];
+
+var BeanScout = module.exports = function(beanNames) {
+  console.log("BEANSCOUT: ", beanNames);
+  this.beanNames = beanNames || [];
+  if (typeof this.beanNames === 'string') {
+    this.beanNames = [this.beanNames];
+  }
+
+  Scout.call(this);
+};
+util.inherits(BeanScout, Scout);
+
+BeanScout.prototype.init = function(cb) {
+  console.log("BeanScout.init()");
+  noble.startScanning();
+  console.log("noble.startScanning()");
+  // noble.on('stateChange', function(state) {
+  //   console.log("noble.on()stateChange");
+  //   if (state === 'poweredOn') {
+  //     console.log("poweredOn");
+  //     noble.startScanning();
+  //   }
+  //   else {
+  //     console.log("poweredoff");
+  //     noble.stopScanning();
+  //   }
+  // });
+
+  // noble.on('discover', function(peripheral) {
+  //   console.log('Found device with local name: ' + peripheral.advertisement.localName);
+  //   console.log('advertising the following service uuid\'s: ' + peripheral.advertisement.serviceUuids);
+  //   //noble.stopScanning();
+  //   //console.log("noble.stopScanning()");
+  //   //cb();
+    
+  // });
+  
+  noble.on('discover', peripheral);
+  
+  this._beanDiscovered.bind(this)
+  console.log('Found device with local name: ' + this.advertisement.localName);
+   console.log('advertising the following service uuid\'s: ' + this.advertisement.serviceUuids);
+  noble.startScanning(BEAN_SERVICE_ID);
+  cb();
+};
+
+BeanScout.prototype._beanDiscovered = function(data) {
+  console.log("BEAN DISCOVERED");
+  if (this.beanNames.length > 0 && this.beanNames.indexOf(data.advertisement.localName) < 0) {
+    return;
+  }
+
+  var self = this;
+  var query = this.server.where({ type: 'ble-bean', uuid: data.uuid });
+  
+  var connect = function(bean) {
+    console.log('connecting to bean');
+    bean.call('connect', function(err) {});
+  };
+  
+  this.server.find(query, function(err, results) {
+    if (results.length) {
+      var bean = self.provision(results[0], Bean, data);
+      if (bean) {
+        connect(bean);
+      }
+    } else {
+      var bean = self.discover(Bean, data);
+      connect(bean);
+    }
+  });
+};
+
+
+
+
