@@ -8,7 +8,7 @@ var Hue = require('zetta-hue-driver');
 var Color = require('color');
 
 
-// Require custom apps
+// Require custom apps here
 var beanApp = require('./apps/bean');
 var ledApp = require('./apps/led');
 var hueApp = require('./apps/hue');
